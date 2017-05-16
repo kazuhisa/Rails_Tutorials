@@ -54,7 +54,7 @@ class UserTest < ActiveSupport::TestCase
   test "error message Email can't be blank" do
     @user = User.new(name:"Example User", email:"", password:"foobar", password_confirmation:"foobar")
     @user.valid?
-    assert_equal @user.errors[:email], ["can't be blank"]
+    assert_equal @user.errors[:email], ["can't be blank", "is invalid"]
   end
 
   test "error message Password can't be blank" do
