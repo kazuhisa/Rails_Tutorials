@@ -45,4 +45,34 @@ class UserTest < ActiveSupport::TestCase
     assert_not @user.valid?
   end
 
+  test "error message Name can't be blank" do
+  @user = User.new(name:"", email:"user@example.com", password:"foobar", password_confirmation:"foobar")
+  @user.valid?
+  assert_equal @user.errors[:name], ["can't be blank"]
+  end
+
+  test "error message Email can't be blank" do
+    @user = User.new(name:"Example User", email:"", password:"foobar", password_confirmation:"foobar")
+    @user.valid?
+    assert_equal @user.errors[:email], ["can't be blank"]
+  end
+
+  test "error message Password can't be blank" do
+    @user = User.new(name:"Example User", email:"user@example.com", password:"", password_confirmation:"foobar")
+    @user.valid?
+    assert_equal @user.errors[:password], ["can't be blank", "can't be blank", "is too short (minimum is 6 characters)"]
+  end
+
+  test "error message Password confirmation doesn't match Password" do
+    @user = User.new(name:"Example User", email:"user@example.com", password:"foobar", password_confirmation:"")
+    @user.valid?
+    assert_equal @user.errors[:password_confirmation], ["doesn't match Password"]
+  end
+
+  test "error message Password is too short (minimum is 6 characters)" do
+    @user = User.new(name:"Example User", email:"user@example.com", password:"foo", password_confirmation:"foo")
+    @user.valid?
+    assert_equal @user.errors[:password], ["is too short (minimum is 6 characters)"]
+  end
+
 end
