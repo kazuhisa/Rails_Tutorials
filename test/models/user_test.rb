@@ -75,4 +75,8 @@ class UserTest < ActiveSupport::TestCase
     assert_equal @user.errors[:password], ["is too short (minimum is 6 characters)"]
   end
 
+  test "authenticated? should return false for a user with nil digest" do
+    assert_not @user.authenticated?('')
+  end
+
 end
