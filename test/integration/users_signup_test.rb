@@ -4,6 +4,7 @@ class UsersSignupTest < ActionDispatch::IntegrationTest
 
   def setup
     ActionMailer::Base.deliveries.clear
+    @activation_user = users(:michael)
   end
 
   test "invalid signup information" do
@@ -49,6 +50,27 @@ class UsersSignupTest < ActionDispatch::IntegrationTest
     assert_template 'users/show'
     assert is_logged_in?
   end
+
+  test "not activation account don't show and index" do
+    get signup_path
+    assert_difference 'User.count', 1 do
+      post users_path, params: { user: { name:  "Example User",
+                                       email: "user@example.com",
+                                       password:              "password",
+                                       password_confirmation: "password" } }
+    end
+    user = assigns(:user)
+    assert_not user.activated?
+    # 有効化していない状態でユーザー情報を表示する
+    get user_path(user)
+    assert_redirected_to root_url
+    # 有効化済みのアカウントでログイン後、ユーザー一覧を表示し、有効化していないユーザーが表示されないか確認
+    log_in_as(@activation_user)
+    get users_path
+    assert_template 'users/index'
+    assert_select "a[href=?]", user_path(user), 0
+  end
+
 
   test "flash nil?" do
     get signup_path
